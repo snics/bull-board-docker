@@ -1,6 +1,7 @@
 const { setQueues, router } = require('bull-board');
 const Queue = require('bull');
 const express = require('express');
+const basicAuth = require('express-basic-auth');
 const redis = require('redis');
 
 const {
@@ -11,7 +12,10 @@ const {
   REDIS_DATABASE,
   BULL_PREFIX = 'bull',
   PORT = 3000,
-  BASE_PATH = '/'
+  BASE_PATH = '/',
+  BASIC_AUTH = false,
+  BASIC_AUTH_USER = 'admin',
+  BASIC_AUTH_PASSWORD = 'admin'
 } = process.env;
 
 const redisConfig = {
@@ -37,6 +41,18 @@ client.KEYS(`${prefix}:*`, (err, keys) => {
 });
 
 const app = express();
+
+if (BASIC_AUTH) {
+  const users = {};
+  if (BASIC_AUTH_USER && BASIC_AUTH_PASSWORD) {
+    users[BASIC_AUTH_USER] = BASIC_AUTH_PASSWORD;
+  }
+
+  app.use(basicAuth({
+    users,
+    challenge: true,
+  }));
+}
 
 app.use(`${basePath}`, router);
 app.listen(port, () => {
