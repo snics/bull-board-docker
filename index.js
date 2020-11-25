@@ -10,7 +10,8 @@ const {
   REDIS_USE_TLS,
   REDIS_DATABASE,
   BULL_PREFIX = 'bull',
-  PORT = 3000
+  PORT = 3000,
+  BASE_PATH = '/'
 } = process.env;
 
 const redisConfig = {
@@ -26,6 +27,7 @@ const redisConfig = {
 const client = redis.createClient(redisConfig.redis);
 const prefix = BULL_PREFIX;
 const port = PORT;
+const basePath = BASE_PATH;
 
 client.KEYS(`${prefix}:*`, (err, keys) => {
   const uniqKeys = new Set(keys.map(key => key.replace(/^.+?:(.+?):.+?$/, '$1')));
@@ -36,7 +38,7 @@ client.KEYS(`${prefix}:*`, (err, keys) => {
 
 const app = express();
 
-app.use('/', router);
+app.use(`${basePath}`, router);
 app.listen(port, () => {
-  console.log(`bull-board listening on port ${port}!`);
+  console.log(`bull-board listening on port ${port} on basePath "${basePath}"!`);
 });

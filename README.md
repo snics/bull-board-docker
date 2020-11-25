@@ -34,6 +34,7 @@ see "Example with docker-compose" section for example with env parameters
 * `REDIS_PASSWORD` - password to connect to redis (no password by default)
 * `REDIS_DATABASE` - database to connect to redis (no database by default)
 * `BULL_PREFIX` - prefix to your bull queue name (bull by default)
+* `BASE_PATH` - basePath for bull board, e.g. '/bull-board' ('/' by default)
 
 ### Example with docker-compose
 ```
