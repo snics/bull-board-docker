@@ -1,24 +1,26 @@
-const {setQueues, router} = require('bull-board');
+const { setQueues, router } = require('bull-board');
 const Queue = require('bull');
 const express = require('express');
 const redis = require('redis');
 
 const {
-	REDIS_PORT = 6379,
-	REDIS_HOST = 'localhost',
-	REDIS_PASSWORD,
-	REDIS_USE_TLS,
-	BULL_PREFIX = 'bull',
-	PORT = 3000
+  REDIS_PORT = 6379,
+  REDIS_HOST = 'localhost',
+  REDIS_PASSWORD,
+  REDIS_USE_TLS,
+  REDIS_DATABASE,
+  BULL_PREFIX = 'bull',
+  PORT = 3000
 } = process.env;
 
 const redisConfig = {
-	redis: {
-		port: REDIS_PORT,
-		host: REDIS_HOST,
-		...(REDIS_PASSWORD && { password: REDIS_PASSWORD }),
-		tls: REDIS_USE_TLS === 'true',
-	},
+  redis: {
+    port: REDIS_PORT,
+    host: REDIS_HOST,
+    ...( REDIS_PASSWORD && { password: REDIS_PASSWORD } ),
+    ...( REDIS_DATABASE && { db: REDIS_DATABASE } ),
+    tls: REDIS_USE_TLS === 'true'
+  }
 };
 
 const client = redis.createClient(redisConfig.redis);
@@ -26,15 +28,15 @@ const prefix = BULL_PREFIX;
 const port = PORT;
 
 client.KEYS(`${prefix}:*`, (err, keys) => {
-	const uniqKeys = new Set(keys.map(key => key.replace(/^.+?:(.+?):.+?$/, '$1')));
-	const queueList = Array.from(uniqKeys).map((item) => new Queue(item, redisConfig));
+  const uniqKeys = new Set(keys.map(key => key.replace(/^.+?:(.+?):.+?$/, '$1')));
+  const queueList = Array.from(uniqKeys).map((item) => new Queue(item, redisConfig));
 
-	setQueues(queueList);
+  setQueues(queueList);
 });
 
 const app = express();
 
 app.use('/', router);
 app.listen(port, () => {
-	console.log(`bull-board listening on port ${port}!`);
+  console.log(`bull-board listening on port ${port}!`);
 });
