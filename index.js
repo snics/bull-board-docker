@@ -42,7 +42,7 @@ client.KEYS(`${prefix}:*`, (err, keys) => {
 
 const app = express();
 
-if (BASIC_AUTH) {
+if (BASIC_AUTH === 'true') {
   const users = {};
   if (BASIC_AUTH_USER && BASIC_AUTH_PASSWORD) {
     users[BASIC_AUTH_USER] = BASIC_AUTH_PASSWORD;
