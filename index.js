@@ -57,4 +57,5 @@ if (BASIC_AUTH === 'true') {
 app.use(`${basePath}`, router);
 app.listen(port, () => {
   console.log(`bull-board listening on port ${port} on basePath "${basePath}"!`);
+  if (BASIC_AUTH === 'true') console.log(`Basic auth is active!`);
 });
